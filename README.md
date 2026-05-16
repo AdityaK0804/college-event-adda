@@ -4,6 +4,7 @@ A modern full-stack college event management platform built for students, organi
 
 CrescentPass helps colleges manage technical fests, workshops, cultural programs, sports tournaments, hackathons, and student activities through a centralized digital platform with QR tickets, analytics, event discovery, dashboards, and real-time updates.
 
+Live Demo: https://crescent-event-x.vercel.app/
 ---
 
 # ✨ Features
