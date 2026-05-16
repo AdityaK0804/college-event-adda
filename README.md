@@ -1,4 +1,4 @@
-# CrescentPass / EventX 🎟️
+# CrescentPass / EventX 
 
 A modern full-stack college event management platform built for students, organisers, and campus communities.
 
@@ -7,9 +7,9 @@ CrescentPass helps colleges manage technical fests, workshops, cultural programs
 Live Demo: https://crescent-event-x.vercel.app/
 ---
 
-# ✨ Features
+#  Features
 
-## 👨‍🎓 Student Features
+##  Student Features
 
 * Browse upcoming college events
 * Filter events by category and price
@@ -26,7 +26,7 @@ Live Demo: https://crescent-event-x.vercel.app/
 
 ---
 
-## 🧑‍💼 Organiser Features
+##  Organiser Features
 
 * Create and manage events
 * Edit existing events
@@ -41,7 +41,7 @@ Live Demo: https://crescent-event-x.vercel.app/
 
 ---
 
-## 🛡️ Admin Features
+##  Admin Features
 
 * Approve or reject events
 * View platform analytics
