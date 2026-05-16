@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Calendar, Clock, MapPin, User, BadgeIndianRupee, Share2 } from "lucide-react";
+import { Calendar, Clock, MapPin, User, BadgeIndianRupee, Share2, Heart, Users } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/contexts/useAuth";
@@ -16,6 +16,7 @@ import { getEvent } from "@/services/events.service";
 import { createRegistration } from "@/services/registrations.service";
 import TicketConfirmModal from "@/components/TicketConfirmModal";
 import { joinWaitlist, getWaitlistPosition } from "@/services/waitlist.service";
+import { addBookmark, removeBookmark, isBookmarked } from "@/services/bookmarks.service";
 
 declare global {
   interface Window {
@@ -30,16 +31,55 @@ const EventDetail = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user, profile } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [quantity, setQuantity] = useState(1);
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
+
+  // Bookmark state
+  const bookmarkKey = ["bookmark", user?.id, id];
+  const { data: bookmarked = false } = useQuery({
+    queryKey: bookmarkKey,
+    queryFn: () => isBookmarked(user!.id, id!),
+    enabled: !!user?.id && !!id,
+    staleTime: 1000 * 60 * 5,
+  });
+  const toggleBookmark = useMutation({
+    mutationFn: async () => {
+      if (!user || !id) return;
+      bookmarked ? await removeBookmark(user.id, id) : await addBookmark(user.id, id);
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: bookmarkKey });
+      queryClient.setQueryData(bookmarkKey, !bookmarked);
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: bookmarkKey }),
+  });
   const [confirmedRegistration, setConfirmedRegistration] = useState<any>(null);
   const [waitlistPosition, setWaitlistPosition] = useState<number | null>(null);
   const [joiningWaitlist, setJoiningWaitlist] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const { data: event, isLoading, isError } = useQuery({
     queryKey: ["event", id],
     queryFn: () => getEvent(id!),
     enabled: !!id,
+  });
+
+  // Check for existing registration (duplicate prevention)
+  const { data: existingReg } = useQuery({
+    queryKey: ["existing-registration", id, user?.id],
+    queryFn: async () => {
+      const { data } = await (await import("@/lib/supabase")).supabase
+        .from("registrations")
+        .select("id, ticket_status")
+        .eq("event_id", id!)
+        .eq("user_id", user!.id)
+        .neq("ticket_status", "cancelled")
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!id && !!user?.id,
+    staleTime: 1000 * 60,
   });
 
   if (isLoading) return (
@@ -75,11 +115,21 @@ const EventDetail = () => {
   const availabilityPct = (event.available_seats / event.total_seats) * 100;
   const barColor = availabilityPct <= 20 ? "bg-red-500" : availabilityPct <= 50 ? "bg-yellow-500" : "bg-green-500";
   const soldOut = event.available_seats === 0;
+  const isOwnEvent = user?.id === event.organizer_id;
+  const alreadyRegistered = !!existingReg;
 
   const handleBookTickets = () => {
     if (!isAuthenticated) {
       toast({ title: "Please sign in to book tickets", variant: "destructive" });
       navigate("/login?redirect=" + encodeURIComponent(`/events/${id}`));
+      return;
+    }
+    if (isOwnEvent) {
+      toast({ title: "You can't register for your own event", variant: "destructive" });
+      return;
+    }
+    if (alreadyRegistered) {
+      toast({ title: "You already have a ticket for this event" });
       return;
     }
     setShowRegistrationForm(true);
@@ -293,11 +343,13 @@ const EventDetail = () => {
                   )}
 
                   <Button
-                    className="w-full bg-eventx-purple hover:bg-eventx-dark-purple mb-3"
+                    className={`w-full mb-3 ${alreadyRegistered ? "bg-green-600 hover:bg-green-700" : "bg-eventx-purple hover:bg-eventx-dark-purple"}`}
                     onClick={handleBookTickets}
-                    disabled={soldOut}
+                    disabled={soldOut || alreadyRegistered || isOwnEvent}
                   >
-                    {soldOut ? "Sold Out" : "Book Now"}
+                    {alreadyRegistered ? "Already Registered ✓" :
+                     isOwnEvent ? "Your Event" :
+                     soldOut ? "Sold Out" : "Book Now"}
                   </Button>
 
                   {soldOut && (
@@ -336,9 +388,26 @@ const EventDetail = () => {
                     </div>
                   )}
 
-                  <Button variant="outline" className="w-full flex items-center gap-2" onClick={handleShare}>
-                    <Share2 className="h-4 w-4" /> Share Event
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button variant="outline" className="flex-1 flex items-center gap-2" onClick={handleShare}>
+                      <Share2 className="h-4 w-4" /> Share
+                    </Button>
+                    {isAuthenticated && (
+                      <Button
+                        variant="outline"
+                        className="flex items-center gap-1.5"
+                        onClick={() => toggleBookmark.mutate()}
+                      >
+                        <Heart className={`h-4 w-4 ${bookmarked ? "fill-red-500 text-red-500" : ""}`} />
+                        {bookmarked ? "Saved" : "Save"}
+                      </Button>
+                    )}
+                  </div>
+                  {isAuthenticated && user?.id === event.organizer_id && (
+                    <Button variant="outline" className="w-full flex items-center gap-2 mt-2" onClick={() => navigate(`/events/${event.id}/attendees`)}>
+                      <Users className="h-4 w-4" /> View Attendees
+                    </Button>
+                  )}
                 </>
               )}
             </div>

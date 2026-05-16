@@ -1,8 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Download, Calendar, MapPin } from "lucide-react";
+import { Check, Download, Calendar, MapPin, FileText } from "lucide-react";
 import QRCode from "qrcode";
 import { formatDate } from "@/lib/utils";
 
@@ -27,6 +27,7 @@ interface Props {
 
 const TicketConfirmModal = ({ registration, event, onClose }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   useEffect(() => {
     if (!canvasRef.current || !registration.qr_data) return;
@@ -37,12 +38,36 @@ const TicketConfirmModal = ({ registration, event, onClose }: Props) => {
     });
   }, [registration.qr_data]);
 
-  const handleDownload = () => {
+  const handleDownloadQR = () => {
     if (!canvasRef.current) return;
     const link = document.createElement("a");
     link.download = `ticket-${registration.ticket_id.slice(0, 8)}.png`;
     link.href = canvasRef.current.toDataURL("image/png");
     link.click();
+  };
+
+  const handleDownloadPDF = async () => {
+    setPdfLoading(true);
+    try {
+      const { generateTicketPDF } = await import("@/lib/ticket-pdf");
+      await generateTicketPDF({
+        ticketId: registration.ticket_id,
+        eventTitle: event.title,
+        eventDate: formatDate(event.date),
+        eventTime: event.time,
+        venue: event.location,
+        college: event.college,
+        category: event.category,
+        studentName: "Attendee",
+        quantity: registration.quantity,
+        qrData: registration.qr_data,
+      });
+    } catch {
+      // Fallback to QR download
+      handleDownloadQR();
+    } finally {
+      setPdfLoading(false);
+    }
   };
 
   return (
@@ -90,8 +115,9 @@ const TicketConfirmModal = ({ registration, event, onClose }: Props) => {
           </p>
 
           <div className="flex gap-2 w-full">
-            <Button variant="outline" className="flex-1 gap-1.5 text-sm" onClick={handleDownload}>
-              <Download className="h-4 w-4" /> Save Ticket
+            <Button variant="outline" className="flex-1 gap-1.5 text-sm" onClick={handleDownloadPDF} disabled={pdfLoading}>
+              <FileText className="h-4 w-4" />
+              {pdfLoading ? "Generating…" : "PDF Ticket"}
             </Button>
             <Button className="flex-1 bg-eventx-purple hover:bg-eventx-dark-purple text-sm" onClick={onClose}>
               Done

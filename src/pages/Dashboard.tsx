@@ -11,9 +11,27 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import { getUserRegistrations } from "@/services/registrations.service";
 import { getOrganizerEvents } from "@/services/events.service";
-import { QrCode, ScanLine, BarChart3, Ticket, Plus } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { QrCode, ScanLine, BarChart3, Ticket, Plus, Download } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
+
+// Lazy PDF download helper — keeps jsPDF out of initial bundle
+const downloadTicketPDF = async (reg: any, userName: string) => {
+  const { generateTicketPDF } = await import("@/lib/ticket-pdf");
+  const { formatDate } = await import("@/lib/utils");
+  await generateTicketPDF({
+    ticketId: reg.ticket_id,
+    eventTitle: reg.event?.title ?? "Event",
+    eventDate: reg.event?.date ? formatDate(reg.event.date) : "",
+    eventTime: reg.event?.time ?? "",
+    venue: reg.event?.location ?? "",
+    college: reg.event?.college ?? "",
+    category: reg.event?.category ?? "",
+    studentName: userName,
+    quantity: reg.quantity,
+    qrData: reg.qr_data,
+  });
+};
 
 // Mini inline ticket QR
 const TicketQR = ({ qrData }: { qrData: string | null }) => {
@@ -142,6 +160,9 @@ const Dashboard = () => {
                       <Button className="w-full bg-eventx-purple hover:bg-eventx-dark-purple" onClick={() => navigate("/events")}>
                         Explore Events
                       </Button>
+                      <Button variant="outline" className="w-full" onClick={() => navigate("/dashboard/saved")}>
+                        ♥ Saved Events
+                      </Button>
                       <Button variant="outline" className="w-full" onClick={() => navigate("/profile")}>
                         Edit Profile
                       </Button>
@@ -188,9 +209,19 @@ const Dashboard = () => {
                         <div className="md:text-right shrink-0">
                           <div className="font-semibold">{formatCurrency(reg.total_amount)}</div>
                           <div className="text-xs text-gray-500 mt-0.5">{formatDate(reg.created_at)}</div>
-                          <Button variant="outline" size="sm" className="mt-2" onClick={() => navigate(`/events/${reg.event_id}`)}>
-                            View Event
-                          </Button>
+                          <div className="flex gap-2 mt-2 md:justify-end">
+                            <Button variant="outline" size="sm" onClick={() => navigate(`/events/${reg.event_id}`)}>
+                              View Event
+                            </Button>
+                            {reg.ticket_status === "confirmed" && (
+                              <Button
+                                variant="outline" size="sm" className="gap-1"
+                                onClick={() => downloadTicketPDF(reg, user?.name ?? "Attendee")}
+                              >
+                                <Download className="h-3.5 w-3.5" /> PDF
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}

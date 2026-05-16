@@ -24,6 +24,8 @@ const Profile = lazy(() => import("./pages/Profile"));
 const CreateEvent = lazy(() => import("./pages/CreateEvent"));
 const Scanner = lazy(() => import("./pages/Scanner"));
 const Admin = lazy(() => import("./pages/Admin"));
+const Attendees = lazy(() => import("./pages/Attendees"));
+const SavedEvents = lazy(() => import("./pages/SavedEvents"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -72,6 +74,12 @@ const App = () => (
               } />
               <Route path="/admin" element={
                 <ProtectedRoute requiredRole="admin"><Admin /></ProtectedRoute>
+              } />
+              <Route path="/events/:id/attendees" element={
+                <ProtectedRoute requiredRole={["organizer", "admin"]}><Attendees /></ProtectedRoute>
+              } />
+              <Route path="/dashboard/saved" element={
+                <ProtectedRoute><SavedEvents /></ProtectedRoute>
               } />
 
               <Route path="*" element={<NotFound />} />
