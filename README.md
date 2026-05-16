@@ -308,7 +308,7 @@ npm run build
 
 ---
 
-# 🧪 Demo Event Categories
+#  Demo Event Categories
 
 * Technical
 * Cultural
@@ -330,7 +330,7 @@ The goal of CrescentPass is to replace fragmented college event management syste
 * Excel sheets
 * Offline registrations
 * Manual ticket verification
-
+* 
 with a centralized, modern, scalable platform.
 
 ---
@@ -345,12 +345,6 @@ Built using React, TypeScript, Supabase, and modern frontend architecture.
 
 ---
 
-# 📄 License
-
-This project is licensed under the MIT License.
-
----
-
 # ⭐ Support
 
 If you like this project:
@@ -359,15 +353,6 @@ If you like this project:
 * Fork the project 🍴
 * Share feedback 💬
 
----
-
-# 📬 Contact
-
-For collaborations or queries:
-
-📧 [support@eventx.in](mailto:support@eventx.in)
-
----
 
 # 🏁 Final Note
 
