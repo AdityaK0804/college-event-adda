@@ -83,12 +83,12 @@ const Profile = () => {
   // Profile missing and not loading — show graceful message inside the page layout
   if (!isProfileLoading && !profile) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-background theme-transition">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <p className="text-gray-500 mb-2">Could not load your profile.</p>
-            <p className="text-sm text-gray-400">Try refreshing the page or signing out and back in.</p>
+            <p className="text-muted-foreground mb-2">Could not load your profile.</p>
+            <p className="text-sm text-muted-foreground/70">Try refreshing the page or signing out and back in.</p>
           </div>
         </div>
         <Footer />
@@ -99,27 +99,27 @@ const Profile = () => {
   const p = profile as any;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background theme-transition">
       <Navbar />
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <div className="container mx-auto px-4 py-8 max-w-2xl flex-1">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold">Profile</h1>
-          <p className="text-gray-600">Manage your account information</p>
+          <h1 className="text-3xl font-bold text-foreground">Profile</h1>
+          <p className="text-muted-foreground mt-1">Manage your account information</p>
         </header>
 
         {/* Identity card */}
         <Card className="mb-6">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full bg-eventx-light-purple flex items-center justify-center shrink-0">
-                <User className="h-6 w-6 text-eventx-purple" />
+              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0 ring-1 ring-primary/20">
+                <User className="h-6 w-6 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-semibold text-lg truncate">{p.name}</div>
-                <div className="text-sm text-gray-500 truncate">{p.email}</div>
+                <div className="font-semibold text-lg truncate text-foreground">{p.name}</div>
+                <div className="text-sm text-muted-foreground truncate">{p.email}</div>
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
-                  <Badge className="bg-eventx-purple capitalize text-xs">{p.role}</Badge>
-                  {p.rrn && <span className="text-xs text-gray-500 font-mono">RRN: {p.rrn}</span>}
+                  <Badge className="bg-primary/10 text-primary border-0 capitalize text-xs">{p.role}</Badge>
+                  {p.rrn && <span className="text-xs text-muted-foreground font-mono">RRN: {p.rrn}</span>}
                 </div>
               </div>
             </div>
@@ -184,10 +184,10 @@ const Profile = () => {
                   </FormItem>
                 )} />
 
-                <Button type="submit" className="w-full bg-eventx-purple hover:bg-eventx-dark-purple" disabled={isSaving}>
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isSaving}>
                   {isSaving ? (
                     <span className="flex items-center gap-2">
-                      <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                      <span className="w-4 h-4 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
                       Saving…
                     </span>
                   ) : "Save Changes"}

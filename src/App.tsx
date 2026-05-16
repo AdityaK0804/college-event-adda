@@ -7,6 +7,7 @@ import { lazy, Suspense } from "react";
 
 // Providers
 import { AuthProvider } from "./contexts/AuthContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Eagerly-loaded pages (needed on first paint)
@@ -37,57 +38,62 @@ const queryClient = new QueryClient({
 });
 
 const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="w-6 h-6 rounded-full border-2 border-eventx-purple border-t-transparent animate-spin" />
+  <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="flex flex-col items-center gap-3">
+      <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      <span className="text-sm text-muted-foreground">Loading…</span>
+    </div>
   </div>
 );
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              {/* Public */}
-              <Route path="/" element={<Index />} />
-              <Route path="/events" element={<Events />} />
-              <Route path="/events/:id" element={<EventDetail />} />
-              <Route path="/past-events" element={<PastEvents />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+    <ThemeProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                {/* Public */}
+                <Route path="/" element={<Index />} />
+                <Route path="/events" element={<Events />} />
+                <Route path="/events/:id" element={<EventDetail />} />
+                <Route path="/past-events" element={<PastEvents />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
 
-              {/* Auth-required */}
-              <Route path="/dashboard" element={
-                <ProtectedRoute><Dashboard /></ProtectedRoute>
-              } />
-              <Route path="/profile" element={
-                <ProtectedRoute><Profile /></ProtectedRoute>
-              } />
-              <Route path="/create-event" element={
-                <ProtectedRoute requiredRole={["organizer", "admin"]}><CreateEvent /></ProtectedRoute>
-              } />
-              <Route path="/scan/:eventId" element={
-                <ProtectedRoute requiredRole={["organizer", "admin"]}><Scanner /></ProtectedRoute>
-              } />
-              <Route path="/admin" element={
-                <ProtectedRoute requiredRole="admin"><Admin /></ProtectedRoute>
-              } />
-              <Route path="/events/:id/attendees" element={
-                <ProtectedRoute requiredRole={["organizer", "admin"]}><Attendees /></ProtectedRoute>
-              } />
-              <Route path="/dashboard/saved" element={
-                <ProtectedRoute><SavedEvents /></ProtectedRoute>
-              } />
+                {/* Auth-required */}
+                <Route path="/dashboard" element={
+                  <ProtectedRoute><Dashboard /></ProtectedRoute>
+                } />
+                <Route path="/profile" element={
+                  <ProtectedRoute><Profile /></ProtectedRoute>
+                } />
+                <Route path="/create-event" element={
+                  <ProtectedRoute requiredRole={["organizer", "admin"]}><CreateEvent /></ProtectedRoute>
+                } />
+                <Route path="/scan/:eventId" element={
+                  <ProtectedRoute requiredRole={["organizer", "admin"]}><Scanner /></ProtectedRoute>
+                } />
+                <Route path="/admin" element={
+                  <ProtectedRoute requiredRole="admin"><Admin /></ProtectedRoute>
+                } />
+                <Route path="/events/:id/attendees" element={
+                  <ProtectedRoute requiredRole={["organizer", "admin"]}><Attendees /></ProtectedRoute>
+                } />
+                <Route path="/dashboard/saved" element={
+                  <ProtectedRoute><SavedEvents /></ProtectedRoute>
+                } />
 
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

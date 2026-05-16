@@ -66,18 +66,18 @@ const Admin = () => {
   });
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background theme-transition">
       <Navbar />
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 flex-1">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold">Admin Panel</h1>
-          <p className="text-gray-600">Review and moderate event submissions</p>
+          <h1 className="text-3xl font-bold text-foreground">Admin Panel</h1>
+          <p className="text-muted-foreground mt-1">Review and moderate event submissions</p>
         </header>
 
         {isError ? (
           <div className="text-center py-16">
-            <h3 className="text-xl font-bold mb-2">Could not load pending events</h3>
-            <p className="text-gray-600 mb-4">Check your permissions or try again.</p>
+            <h3 className="text-xl font-bold mb-2 text-foreground">Could not load pending events</h3>
+            <p className="text-muted-foreground mb-4">Check your permissions or try again.</p>
             <Button variant="outline" onClick={() => window.location.reload()}>Retry</Button>
           </div>
         ) : isLoading ? (
@@ -90,46 +90,46 @@ const Admin = () => {
           <Card>
             <CardContent className="py-12 text-center">
               <CheckCircle2 className="h-12 w-12 text-green-300 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg">No events pending review</p>
-              <p className="text-sm text-gray-400 mt-1">All caught up!</p>
+              <p className="text-muted-foreground text-lg">No events pending review</p>
+              <p className="text-sm text-muted-foreground/70 mt-1">All caught up!</p>
             </CardContent>
           </Card>
         ) : (
           <div className="space-y-4">
-            <p className="text-sm text-gray-500">{pendingEvents.length} event{pendingEvents.length !== 1 ? 's' : ''} pending review</p>
+            <p className="text-sm text-muted-foreground">{pendingEvents.length} event{pendingEvents.length !== 1 ? 's' : ''} pending review</p>
             {pendingEvents.map((event) => (
-              <Card key={event.id} className="overflow-hidden">
+              <Card key={event.id} className="overflow-hidden border-border/50">
                 <CardHeader className="pb-3">
                   <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
                     <div>
-                      <CardTitle className="text-lg">{event.title}</CardTitle>
-                      <p className="text-sm text-gray-500 mt-1">{event.college}</p>
+                      <CardTitle className="text-lg text-foreground">{event.title}</CardTitle>
+                      <p className="text-sm text-muted-foreground mt-1">{event.college}</p>
                     </div>
-                    <Badge className="bg-yellow-100 text-yellow-800 shrink-0">Pending Review</Badge>
+                    <Badge variant="secondary" className="shrink-0">Pending Review</Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm mb-4">
-                    <div className="flex items-center gap-2 text-gray-600">
+                    <div className="flex items-center gap-2 text-muted-foreground">
                       <User className="h-4 w-4 shrink-0" />
                       <span className="truncate">{event.organizer_name}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-gray-600">
+                    <div className="flex items-center gap-2 text-muted-foreground">
                       <Calendar className="h-4 w-4 shrink-0" />
                       <span>{formatDate(event.date)}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-gray-600">
+                    <div className="flex items-center gap-2 text-muted-foreground">
                       <MapPin className="h-4 w-4 shrink-0" />
                       <span className="truncate">{event.location}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-gray-600">
+                    <div className="flex items-center gap-2 text-muted-foreground">
                       <BadgeIndianRupee className="h-4 w-4 shrink-0" />
                       <span>{event.price === 0 ? "Free" : formatCurrency(event.price)}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 mb-4">
                     <Badge variant="outline">{event.category}</Badge>
-                    <span className="text-xs text-gray-400">{event.total_seats} seats</span>
+                    <span className="text-xs text-muted-foreground">{event.total_seats} seats</span>
                   </div>
                   <div className="flex gap-3">
                     <Button

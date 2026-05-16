@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Triangle } from "lucide-react";
+import CrescentLogo from "@/components/CrescentLogo";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -42,16 +42,16 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background theme-transition">
       <Navbar />
       <div className="flex-1 flex items-center justify-center py-12 px-4">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md border-border/50 shadow-lg">
           <CardHeader className="space-y-1 text-center">
-            <div className="flex justify-center mb-2">
-              <Triangle className="h-8 w-8 text-eventx-purple fill-eventx-orange stroke-eventx-purple" />
+            <div className="flex justify-center mb-3">
+              <CrescentLogo className="text-primary" size={36} />
             </div>
-            <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-            <CardDescription>Sign in to Crescent Pass</CardDescription>
+            <CardTitle className="text-2xl font-bold text-foreground">Welcome back</CardTitle>
+            <CardDescription>Sign in to CrescentPass</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -60,26 +60,26 @@ const Login = () => {
                 <Input
                   id="email" type="email" placeholder="your.email@crescent.edu.in"
                   value={email} onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
+                  autoComplete="email" className="bg-background"
                 />
               </div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
-                  <Link to="/forgot-password" className="text-sm text-eventx-purple hover:underline">
+                  <Link to="/forgot-password" className="text-sm text-primary hover:underline">
                     Forgot password?
                   </Link>
                 </div>
                 <Input
                   id="password" type="password" placeholder="••••••••"
                   value={password} onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
+                  autoComplete="current-password" className="bg-background"
                 />
               </div>
-              <Button type="submit" className="w-full bg-eventx-purple hover:bg-eventx-dark-purple" disabled={isLoading}>
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
                 {isLoading ? (
                   <span className="flex items-center gap-2">
-                    <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                    <span className="w-4 h-4 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
                     Signing in…
                   </span>
                 ) : "Sign In"}
@@ -87,9 +87,9 @@ const Login = () => {
             </form>
           </CardContent>
           <CardFooter>
-            <p className="text-center text-sm w-full">
+            <p className="text-center text-sm w-full text-muted-foreground">
               Don't have an account?{" "}
-              <Link to="/register" className="text-eventx-purple hover:underline font-medium">
+              <Link to="/register" className="text-primary hover:underline font-medium">
                 Register
               </Link>
             </p>

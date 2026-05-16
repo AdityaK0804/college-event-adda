@@ -1,87 +1,88 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 260 100% 99%;
-    --foreground: 260 10% 10%;
+    /* ── Modern Light Mode (Linear / Vercel inspired) ── */
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 260 10% 10%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 260 10% 10%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 260 80% 65%;
-    --primary-foreground: 260 10% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 24 95% 53%;
-    --secondary-foreground: 24 10% 10%;
+    --secondary: 222 47% 11%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 260 10% 96%;
-    --muted-foreground: 260 10% 45%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 260 40% 96%;
-    --accent-foreground: 260 10% 10%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 260 10% 90%;
-    --input: 260 10% 90%;
-    --ring: 260 80% 65%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.625rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 260 80% 65%;
+    --sidebar-primary: 217 91% 60%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent: 210 40% 96%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 260 80% 65%;
+    --sidebar-ring: 217 91% 60%;
   }
 
   .dark {
-    --background: 260 15% 10%;
-    --foreground: 260 10% 98%;
+    /* ── Modern Dark Mode (Vercel / Linear inspired) ── */
+    --background: 222 47% 2%;
+    --foreground: 213 31% 91%;
 
-    --card: 260 15% 12%;
-    --card-foreground: 260 10% 98%;
+    --card: 217 33% 6%;
+    --card-foreground: 213 31% 91%;
 
-    --popover: 260 15% 12%;
-    --popover-foreground: 260 10% 98%;
+    --popover: 217 33% 6%;
+    --popover-foreground: 213 31% 91%;
 
-    --primary: 260 80% 65%;
-    --primary-foreground: 260 10% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 24 95% 53%;
-    --secondary-foreground: 24 10% 98%;
+    --secondary: 215 28% 17%;
+    --secondary-foreground: 213 31% 91%;
 
-    --muted: 260 15% 20%;
-    --muted-foreground: 260 10% 70%;
+    --muted: 217 33% 12%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 260 15% 20%;
-    --accent-foreground: 260 10% 98%;
+    --accent: 217 33% 12%;
+    --accent-foreground: 213 31% 91%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 260 15% 25%;
-    --input: 260 15% 25%;
-    --ring: 260 80% 65%;
+    --border: 217 33% 15%;
+    --input: 217 33% 15%;
+    --ring: 217 91% 60%;
 
-    --sidebar-background: 260 15% 12%;
-    --sidebar-foreground: 260 10% 90%;
-    --sidebar-primary: 260 80% 65%;
-    --sidebar-primary-foreground: 260 10% 98%;
-    --sidebar-accent: 260 15% 18%;
-    --sidebar-accent-foreground: 260 10% 90%;
-    --sidebar-border: 260 15% 25%;
-    --sidebar-ring: 260 80% 65%;
+    --sidebar-background: 217 33% 6%;
+    --sidebar-foreground: 213 31% 91%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 217 33% 12%;
+    --sidebar-accent-foreground: 213 31% 91%;
+    --sidebar-border: 217 33% 15%;
+    --sidebar-ring: 217 91% 60%;
   }
 }
 
@@ -90,12 +91,36 @@
     @apply border-border;
   }
 
+  html {
+    @apply scroll-smooth;
+  }
+
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold;
+    @apply font-bold tracking-tight;
+  }
+}
+
+/* ── Theme transition ── */
+@layer utilities {
+  .theme-transition {
+    @apply transition-colors duration-300 ease-in-out;
+  }
+}
+
+/* ── Smooth skeleton pulse ── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── Focus ring for a11y ── */
+@layer base {
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
 }

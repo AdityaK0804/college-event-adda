@@ -67,12 +67,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loadProfile = useCallback(async (userId: string, force = false) => {
     // Already loaded for this user and not forced
     if (!force && lastLoadedId.current === userId) {
-      console.log('[Auth] loadProfile: cached for', userId, '— skip')
       return
     }
 
     const thisId = ++fetchIdRef.current
-    console.log('[Auth] loadProfile: START', userId, `(fetch #${thisId})`)
     setIsProfileLoading(true)
 
     try {
@@ -84,7 +82,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Stale check: a newer call superseded us
       if (fetchIdRef.current !== thisId) {
-        console.log('[Auth] loadProfile: STALE (fetch #' + thisId + ' superseded by #' + fetchIdRef.current + ')')
         return
       }
       if (!mountedRef.current) return
@@ -99,7 +96,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return
       }
 
-      console.log('[Auth] profile loaded ✓', data?.id)
       lastLoadedId.current = userId
       setProfile(data)
     } catch (err: any) {
@@ -111,7 +107,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // The stale-check above already prevents wrong data from being set.
       if (fetchIdRef.current === thisId && mountedRef.current) {
         setIsProfileLoading(false)
-        console.log('[Auth] isProfileLoading → false (fetch #' + thisId + ')')
       }
     }
   }, [])
@@ -134,7 +129,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         phone: null,
         bio: null
       }
-      console.log('[Auth] upserting stub:', stub)
       const { error } = await supabase.from('profiles').upsert(stub as any, { onConflict: 'id' })
       if (error) { console.error('[Auth] stub upsert error:', error); return }
       const { data: p } = await supabase.from('profiles').select('*').eq('id', userId).single()
@@ -142,7 +136,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         lastLoadedId.current = userId
         setProfile(p)
         setIsProfileLoading(false)
-        console.log('[Auth] stub created & fetched ✓')
       }
     } catch (e) {
       console.error('[Auth] tryCreateStub error:', e)
@@ -153,7 +146,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     mountedRef.current = true
-    console.log('[Auth] AuthProvider mounted')
 
     // STEP 1: getSession() — fast (reads localStorage).  This is our PRIMARY
     // way to unblock ProtectedRoute.  NOT onAuthStateChange, because the
@@ -161,10 +153,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // committed the mount, causing setIsLoading(false) to be discarded.
     supabase.auth.getSession().then(({ data: { session: s } }) => {
       if (!mountedRef.current) return
-      console.log('[Auth] getSession →', s?.user?.id ?? 'no session')
       setSession(s)
       setIsLoading(false)
-      console.log('[Auth] isLoading → false')
 
       if (s?.user && !isSigningUp.current) {
         loadProfile(s.user.id)   // fire-and-forget — does NOT block isLoading
@@ -180,7 +170,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, s) => {
         if (!mountedRef.current) return
-        console.log('[Auth] onAuthStateChange:', event, s?.user?.id ?? 'none')
 
         // INITIAL_SESSION is redundant — getSession() already handled it.
         // Setting session again is harmless (React dedupes same-value setState).
@@ -188,7 +177,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (event === 'SIGNED_IN') {
           if (isSigningUp.current) {
-            console.log('[Auth] SIGNED_IN during signup — skipping profile load')
             return
           }
           // Fire-and-forget — NOT awaited
@@ -209,10 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // STEP 3: Hard safety net — isLoading MUST be false within 3s no matter what
     const safetyTimer = setTimeout(() => {
       if (mountedRef.current) {
-        setIsLoading(prev => {
-          if (prev) console.warn('[Auth] Safety timeout: forcing isLoading → false')
-          return false
-        })
+        setIsLoading(false)
       }
     }, 3000)
 
@@ -232,7 +217,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const register = useCallback(async (data: RegisterData) => {
-    console.log('[Auth] register() start')
     isSigningUp.current = true
     try {
       await signUp({
@@ -240,15 +224,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         rrn: data.rrn ?? '', department: data.department ?? '',
         year: data.year ?? 1, phone: data.phone ?? '', role: data.role,
       })
-      console.log('[Auth] signUp succeeded')
     } finally {
       isSigningUp.current = false
-      console.log('[Auth] isSigningUp → false')
     }
   }, [])
 
   const logout = useCallback(async () => {
-    console.log('[Auth] logout()')
     // Immediately clear state — don't wait for server
     fetchIdRef.current++
     lastLoadedId.current = null
@@ -261,7 +242,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (err: any) {
       console.warn('[Auth] signOut error (state already cleared):', err?.message)
     }
-    console.log('[Auth] logout complete')
   }, [])
 
   const refreshProfile = useCallback(async () => {

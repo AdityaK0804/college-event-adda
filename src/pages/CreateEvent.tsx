@@ -74,15 +74,15 @@ const CreateEvent = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background theme-transition">
       <Navbar />
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <div className="container mx-auto px-4 py-8 max-w-2xl flex-1">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold">Create Event</h1>
-          <p className="text-gray-600">Host your event and reach students at Crescent</p>
+          <h1 className="text-3xl font-bold text-foreground">Create Event</h1>
+          <p className="text-muted-foreground mt-1">Host your event and reach students at Crescent</p>
         </header>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex gap-3 text-sm text-blue-800">
+        <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-6 flex gap-3 text-sm text-blue-700 dark:text-blue-300">
           <Info className="h-4 w-4 mt-0.5 shrink-0" />
           <span>Events are reviewed by admins before going live. You'll be notified once approved.</span>
         </div>
@@ -174,10 +174,10 @@ const CreateEvent = () => {
                   </FormItem>
                 )} />
 
-                <Button type="submit" className="w-full bg-eventx-purple hover:bg-eventx-dark-purple" disabled={form.formState.isSubmitting}>
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting ? (
                     <span className="flex items-center gap-2">
-                      <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                      <span className="w-4 h-4 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
                       Submitting…
                     </span>
                   ) : "Submit for Review"}

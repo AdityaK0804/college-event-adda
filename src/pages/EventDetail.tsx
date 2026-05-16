@@ -83,7 +83,7 @@ const EventDetail = () => {
   });
 
   if (isLoading) return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background theme-transition">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
@@ -101,12 +101,12 @@ const EventDetail = () => {
   );
 
   if (isError || !event) return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background theme-transition">
       <Navbar />
       <div className="container mx-auto py-16 text-center">
-        <h1 className="text-3xl font-bold mb-4">Event not found</h1>
-        <p className="mb-8 text-gray-600">This event may have been removed or doesn't exist.</p>
-        <Button onClick={() => navigate("/events")}>Browse Events</Button>
+        <h1 className="text-3xl font-bold mb-4 text-foreground">Event not found</h1>
+        <p className="mb-8 text-muted-foreground">This event may have been removed or doesn't exist.</p>
+        <Button onClick={() => navigate("/events")} className="bg-primary hover:bg-primary/90 text-primary-foreground">Browse Events</Button>
       </div>
       <Footer />
     </div>
@@ -217,7 +217,7 @@ const EventDetail = () => {
         email: profile?.email ?? "",
         contact: (profile as any)?.phone ?? "",
       },
-      theme: { color: "#8B5CF6" },
+      theme: { color: "#2563EB" },
       modal: {
         ondismiss: async () => {
           // Payment cancelled — release seats
@@ -246,7 +246,7 @@ const EventDetail = () => {
   const imageUrl = event.image_url ?? "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1000";
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background theme-transition">
       <Navbar />
 
       <div className="container mx-auto px-4 py-8">
@@ -256,40 +256,40 @@ const EventDetail = () => {
             <div className="rounded-lg overflow-hidden mb-6">
               <img src={imageUrl} alt={event.title} className="w-full h-auto object-cover" loading="lazy" />
             </div>
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div className="bg-card rounded-xl border border-border/50 shadow-sm p-6 mb-6">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
-                <h1 className="text-2xl sm:text-3xl font-bold">{event.title}</h1>
-                <Badge className="bg-eventx-purple shrink-0">{event.category}</Badge>
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{event.title}</h1>
+                <Badge className="bg-primary/90 text-primary-foreground border-0 shrink-0">{event.category}</Badge>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-gray-500 shrink-0" />
+                  <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
                   <span>{formatDate(event.date)}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-gray-500 shrink-0" />
+                  <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
                   <span>{event.time}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-gray-500 shrink-0" />
+                  <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
                   <span>{event.location}, {event.college}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-gray-500 shrink-0" />
+                  <User className="h-4 w-4 text-muted-foreground shrink-0" />
                   <span>Organised by {event.organizer_name}</span>
                 </div>
               </div>
               <Separator className="my-6" />
               <div>
-                <h2 className="text-xl font-bold mb-4">About This Event</h2>
-                <p className="text-gray-700 whitespace-pre-line leading-relaxed">{event.description}</p>
+                <h2 className="text-xl font-bold mb-4 text-foreground">About This Event</h2>
+                <p className="text-muted-foreground whitespace-pre-line leading-relaxed">{event.description}</p>
               </div>
             </div>
           </div>
 
           {/* Sidebar */}
           <div className="lg:w-1/3">
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-4">
+            <div className="bg-card rounded-xl border border-border/50 shadow-sm p-6 sticky top-20">
               {showRegistrationForm ? (
                 <RegistrationForm
                   onSubmit={handleRegistrationSubmit}
@@ -301,21 +301,21 @@ const EventDetail = () => {
               ) : (
                 <>
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold">Book Tickets</h3>
+                    <h3 className="text-xl font-bold text-foreground">Book Tickets</h3>
                     <div className="flex items-center gap-1">
-                      <BadgeIndianRupee className="h-5 w-5 text-eventx-orange" />
-                      <span className="text-2xl font-bold text-eventx-orange">
+                      <BadgeIndianRupee className="h-5 w-5 text-primary" />
+                      <span className="text-2xl font-bold text-primary">
                         {event.price === 0 ? "Free" : formatCurrency(event.price)}
                       </span>
                     </div>
                   </div>
 
                   <div className="mb-4">
-                    <p className="text-sm text-gray-600 mb-1">
+                    <p className="text-sm text-muted-foreground mb-1">
                       {soldOut ? "Sold out" : `${event.available_seats} / ${event.total_seats} seats available`}
                     </p>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className={`${barColor} h-2 rounded-full`} style={{ width: `${availabilityPct}%` }} />
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div className={`${barColor} h-2 rounded-full transition-all`} style={{ width: `${availabilityPct}%` }} />
                     </div>
                     {event.available_seats <= 10 && !soldOut && (
                       <p className="text-xs text-red-600 mt-1 font-medium">Only {event.available_seats} left!</p>
@@ -334,16 +334,16 @@ const EventDetail = () => {
                   )}
 
                   {!soldOut && (
-                    <div className="mb-4 border rounded-lg p-3 bg-gray-50 text-sm">
-                      <div className="flex justify-between py-1"><span className="text-gray-600">Price per ticket</span><span>{formatCurrency(event.price)}</span></div>
-                      <div className="flex justify-between py-1"><span className="text-gray-600">Quantity</span><span>{quantity}</span></div>
+                    <div className="mb-4 border border-border rounded-xl p-3 bg-muted/50 text-sm">
+                      <div className="flex justify-between py-1"><span className="text-muted-foreground">Price per ticket</span><span className="text-foreground">{formatCurrency(event.price)}</span></div>
+                      <div className="flex justify-between py-1"><span className="text-muted-foreground">Quantity</span><span className="text-foreground">{quantity}</span></div>
                       <Separator className="my-2" />
-                      <div className="flex justify-between font-semibold"><span>Total</span><span>{event.price === 0 ? "Free" : formatCurrency(event.price * quantity)}</span></div>
+                      <div className="flex justify-between font-semibold text-foreground"><span>Total</span><span>{event.price === 0 ? "Free" : formatCurrency(event.price * quantity)}</span></div>
                     </div>
                   )}
 
                   <Button
-                    className={`w-full mb-3 ${alreadyRegistered ? "bg-green-600 hover:bg-green-700" : "bg-eventx-purple hover:bg-eventx-dark-purple"}`}
+                    className={`w-full mb-3 ${alreadyRegistered ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "bg-primary hover:bg-primary/90 text-primary-foreground"}`}
                     onClick={handleBookTickets}
                     disabled={soldOut || alreadyRegistered || isOwnEvent}
                   >
@@ -361,7 +361,7 @@ const EventDetail = () => {
                       ) : (
                         <Button
                           variant="outline"
-                          className="w-full border-eventx-purple text-eventx-purple hover:bg-eventx-light-purple"
+                          className="w-full border-primary text-primary hover:bg-primary/10"
                           disabled={joiningWaitlist || !isAuthenticated}
                           onClick={async () => {
                             if (!user) {
