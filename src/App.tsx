@@ -23,6 +23,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Profile = lazy(() => import("./pages/Profile"));
 const CreateEvent = lazy(() => import("./pages/CreateEvent"));
 const Scanner = lazy(() => import("./pages/Scanner"));
+const Admin = lazy(() => import("./pages/Admin"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -68,6 +69,9 @@ const App = () => (
               } />
               <Route path="/scan/:eventId" element={
                 <ProtectedRoute requiredRole={["organizer", "admin"]}><Scanner /></ProtectedRoute>
+              } />
+              <Route path="/admin" element={
+                <ProtectedRoute requiredRole="admin"><Admin /></ProtectedRoute>
               } />
 
               <Route path="*" element={<NotFound />} />

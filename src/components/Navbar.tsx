@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/useAuth";
 import { useState } from "react";
-import { Menu, X, User, Triangle, History, ScanLine, Plus } from "lucide-react";
+import { Menu, X, User, Triangle, History, ScanLine, Plus, Shield } from "lucide-react";
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -22,6 +22,7 @@ const Navbar = () => {
   };
 
   const isOrganizer = user?.role === "organizer" || user?.role === "admin";
+  const isAdmin = user?.role === "admin";
 
   return (
     <nav className="bg-white shadow-sm py-4 px-4 md:px-8 sticky top-0 z-40">
@@ -46,6 +47,11 @@ const Navbar = () => {
           )}
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
+              {isAdmin && (
+                <Link to="/admin" className="text-sm text-gray-600 hover:text-eventx-purple transition-colors flex items-center gap-1">
+                  <Shield className="h-3.5 w-3.5" /> Admin
+                </Link>
+              )}
               <Link to="/dashboard" className="text-sm text-gray-600 hover:text-eventx-purple transition-colors">Dashboard</Link>
               <Link to="/profile" className="flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-eventx-purple transition-colors">
                 <div className="w-7 h-7 rounded-full bg-eventx-light-purple flex items-center justify-center">
@@ -85,6 +91,11 @@ const Navbar = () => {
             )}
             {isAuthenticated ? (
               <>
+                {isAdmin && (
+                  <Link to="/admin" className="px-6 py-3.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2" onClick={close}>
+                    <Shield className="h-4 w-4" /> Admin Panel
+                  </Link>
+                )}
                 <Link to="/dashboard" className="px-6 py-3.5 text-sm text-gray-700 hover:bg-gray-50" onClick={close}>Dashboard</Link>
                 <Link to="/profile" className="px-6 py-3.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2" onClick={close}>
                   <User className="h-4 w-4" /> {user?.name}

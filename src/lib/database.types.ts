@@ -2,7 +2,7 @@
 // Hand-authored for this project until CLI is configured
 
 export type UserRole = 'student' | 'organizer' | 'admin'
-export type EventStatus = 'draft' | 'pending' | 'active' | 'cancelled' | 'completed'
+export type EventStatus = 'draft' | 'pending' | 'active' | 'approved' | 'rejected' | 'cancelled' | 'completed'
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded'
 export type TicketStatus = 'confirmed' | 'used' | 'cancelled'
 
@@ -83,6 +83,29 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['checkins']['Insert']>
       }
     }
+      bookmarks: {
+        Row: {
+          id: string
+          user_id: string
+          event_id: string
+          created_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['bookmarks']['Row'], 'id' | 'created_at'>
+        Update: Partial<Database['public']['Tables']['bookmarks']['Insert']>
+      }
+      waitlist: {
+        Row: {
+          id: string
+          user_id: string
+          event_id: string
+          position: number
+          notified: boolean
+          created_at: string
+        }
+        Insert: Omit<Database['public']['Tables']['waitlist']['Row'], 'id' | 'position' | 'created_at'>
+        Update: Partial<Database['public']['Tables']['waitlist']['Insert']>
+      }
+    }
     Views: Record<string, never>
     Functions: Record<string, never>
     Enums: {
@@ -99,3 +122,5 @@ export type Profile = Database['public']['Tables']['profiles']['Row']
 export type Event = Database['public']['Tables']['events']['Row']
 export type Registration = Database['public']['Tables']['registrations']['Row']
 export type Checkin = Database['public']['Tables']['checkins']['Row']
+export type Bookmark = Database['public']['Tables']['bookmarks']['Row']
+export type Waitlist = Database['public']['Tables']['waitlist']['Row']

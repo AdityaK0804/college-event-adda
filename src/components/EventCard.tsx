@@ -1,9 +1,12 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, User } from "lucide-react";
+import { Calendar, User, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { formatDate } from "@/lib/utils";
+import { useAuth } from "@/contexts/useAuth";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { addBookmark, removeBookmark, isBookmarked } from "@/services/bookmarks.service";
 
 // Accepts both Supabase Event rows and the legacy mock shape
 interface EventCardProps {
@@ -26,6 +29,8 @@ interface EventCardProps {
 }
 
 const EventCard = ({ event }: EventCardProps) => {
+  const { user, isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
   const imageUrl = event.image_url ?? event.image ?? "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800";
   const organizerName = event.organizer_name ?? event.organizerName ?? "";
   const totalSeats = event.total_seats ?? event.seats?.total ?? 100;
@@ -35,6 +40,33 @@ const EventCard = ({ event }: EventCardProps) => {
   const barColor = pct <= 20 ? "bg-red-500" : pct <= 50 ? "bg-yellow-500" : "bg-green-500";
   const urgency = availableSeats <= 10 && availableSeats > 0;
   const soldOut = availableSeats === 0;
+
+  // Bookmark state
+  const bookmarkKey = ["bookmark", user?.id, event.id];
+  const { data: bookmarked = false } = useQuery({
+    queryKey: bookmarkKey,
+    queryFn: () => isBookmarked(user!.id, event.id),
+    enabled: !!user?.id,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const toggleBookmark = useMutation({
+    mutationFn: async () => {
+      if (!user) return;
+      if (bookmarked) {
+        await removeBookmark(user.id, event.id);
+      } else {
+        await addBookmark(user.id, event.id);
+      }
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: bookmarkKey });
+      queryClient.setQueryData(bookmarkKey, !bookmarked);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: bookmarkKey });
+    },
+  });
 
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md group">
@@ -46,6 +78,15 @@ const EventCard = ({ event }: EventCardProps) => {
           loading="lazy"
         />
         <Badge className="absolute top-2 right-2 bg-eventx-purple">{event.category}</Badge>
+        {isAuthenticated && (
+          <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleBookmark.mutate(); }}
+            className="absolute bottom-2 right-2 p-1.5 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors"
+            aria-label={bookmarked ? "Remove bookmark" : "Add bookmark"}
+          >
+            <Heart className={`h-4 w-4 transition-colors ${bookmarked ? "fill-red-500 text-red-500" : "text-gray-500"}`} />
+          </button>
+        )}
         {urgency && !soldOut && (
           <Badge className="absolute top-2 left-2 bg-red-500 text-white text-xs">
             Only {availableSeats} left!

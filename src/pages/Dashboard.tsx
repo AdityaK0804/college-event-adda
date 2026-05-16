@@ -239,8 +239,15 @@ const Dashboard = () => {
                                   <Badge className={
                                     event.status === "active" ? "bg-green-100 text-green-800" :
                                     event.status === "pending" ? "bg-yellow-100 text-yellow-800" :
+                                    event.status === "rejected" ? "bg-red-100 text-red-800" :
+                                    event.status === "cancelled" ? "bg-red-100 text-red-800" :
                                     "bg-gray-100 text-gray-700"
-                                  }>{event.status}</Badge>
+                                  }>{
+                                    event.status === "active" ? "Approved" :
+                                    event.status === "pending" ? "Pending Review" :
+                                    event.status === "rejected" ? "Rejected" :
+                                    event.status
+                                  }</Badge>
                                   <span className="text-xs text-gray-500">{sold}/{event.total_seats} sold ({fillPct}%)</span>
                                 </div>
                               </div>

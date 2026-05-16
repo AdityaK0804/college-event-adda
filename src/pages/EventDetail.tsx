@@ -15,6 +15,7 @@ import { RegistrationForm } from "@/components/RegistrationForm";
 import { getEvent } from "@/services/events.service";
 import { createRegistration } from "@/services/registrations.service";
 import TicketConfirmModal from "@/components/TicketConfirmModal";
+import { joinWaitlist, getWaitlistPosition } from "@/services/waitlist.service";
 
 declare global {
   interface Window {
@@ -32,6 +33,8 @@ const EventDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
   const [confirmedRegistration, setConfirmedRegistration] = useState<any>(null);
+  const [waitlistPosition, setWaitlistPosition] = useState<number | null>(null);
+  const [joiningWaitlist, setJoiningWaitlist] = useState(false);
 
   const { data: event, isLoading, isError } = useQuery({
     queryKey: ["event", id],
@@ -296,6 +299,42 @@ const EventDetail = () => {
                   >
                     {soldOut ? "Sold Out" : "Book Now"}
                   </Button>
+
+                  {soldOut && (
+                    <div className="mb-3">
+                      {waitlistPosition !== null ? (
+                        <p className="text-sm text-center text-gray-600">
+                          You're #{waitlistPosition} on the waitlist
+                        </p>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          className="w-full border-eventx-purple text-eventx-purple hover:bg-eventx-light-purple"
+                          disabled={joiningWaitlist || !isAuthenticated}
+                          onClick={async () => {
+                            if (!user) {
+                              toast({ title: "Please sign in to join the waitlist", variant: "destructive" });
+                              navigate("/login?redirect=" + encodeURIComponent(`/events/${id}`));
+                              return;
+                            }
+                            setJoiningWaitlist(true);
+                            try {
+                              await joinWaitlist(user.id, event.id);
+                              const pos = await getWaitlistPosition(user.id, event.id);
+                              setWaitlistPosition(pos);
+                              toast({ title: `You're #${pos} on the waitlist!` });
+                            } catch (err: any) {
+                              toast({ title: err?.message ?? "Could not join waitlist", variant: "destructive" });
+                            } finally {
+                              setJoiningWaitlist(false);
+                            }
+                          }}
+                        >
+                          {joiningWaitlist ? "Joining…" : "Join Waitlist"}
+                        </Button>
+                      )}
+                    </div>
+                  )}
 
                   <Button variant="outline" className="w-full flex items-center gap-2" onClick={handleShare}>
                     <Share2 className="h-4 w-4" /> Share Event
